@@ -1,3 +1,4 @@
 .vscode
 perf.data*
 bin/
+app.log
