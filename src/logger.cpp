@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <pthread.h>
 
-Logger::Logger(const std::string &filename, size_t queue_size = 1024) : queue(queue_size), stop(false)
+Logger::Logger(const std::string &filename, size_t queue_size) : queue(queue_size), stop(false), logLvl(LogLevel::INFO)
 {
     fd = open(filename.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0644);
     if (fd == -1)
@@ -27,9 +27,12 @@ Logger::~Logger()
         }
     }
 }
-void Logger::log(const std::string &msg)
+void Logger::log(LogLevel lvl, const std::string &msg)
 {
-    while (!queue.enqueue(msg))
+    if (lvl < logLvl)
+        return;
+    std::string m = "[" + std::string(lvlToString(lvl)) + "] " + msg;
+    while (!queue.enqueue(m))
     {
         sched_yield();
     }
@@ -40,6 +43,20 @@ void *Logger::worker_thread(void *arg)
     Logger *self = static_cast<Logger *>(arg);
     self->run();
     return NULL;
+}
+static void writeAll(int fd, const char *buf, size_t len)
+{
+    size_t total = 0;
+    while (total < len)
+    {
+        ssize_t written;
+        if ((written = write(fd, buf + total, len - total)) == -1)
+        {
+            perror("write");
+            return;
+        }
+        total += written;
+    }
 }
 
 void Logger::run()
@@ -56,7 +73,8 @@ void Logger::run()
 
             if (batch.size() >= 4096)
             {
-                write(fd, batch.data(), batch.size());
+                if (write(this->fd, batch.data(), batch.size()) == -1)
+                    perror("write");
                 batch.clear();
             }
         }
@@ -66,5 +84,39 @@ void Logger::run()
             batch.clear();
         }
         sched_yield();
+    }
+    // final drain
+    while (queue.dequeue(msg))
+    {
+        batch.append(msg);
+        batch.push_back('\n');
+        if (batch.size() >= 4096)
+        {
+            writeAll(this->fd, batch.data(), batch.size());
+            batch.clear();
+        }
+    }
+    if (!batch.empty())
+    {
+        writeAll(this->fd, batch.data(), batch.size());
+    }
+}
+
+const char *Logger::lvlToString(LogLevel lvl)
+{
+    switch (lvl)
+    {
+    case LogLevel::DEBUG:
+        return "DEBUG";
+    case LogLevel::INFO:
+        return "INFO";
+    case LogLevel::WARN:
+        return "WARN";
+    case LogLevel::ERROR:
+        return "ERROR";
+    case LogLevel::NONE:
+        return "NONE";
+    default:
+        return "UNKNOWN";
     }
 }

@@ -8,6 +8,16 @@
  * @class Logger
  * @brief Async Logger to write msgs to a file using worker thread
  */
+
+enum class LogLevel
+{
+    DEBUG,
+    INFO,
+    WARN,
+    ERROR,
+    NONE
+};
+
 class Logger
 {
 public:
@@ -17,13 +27,14 @@ public:
      * @brief Queues a log message to be written to the file.
      * @param msg The message to log.
      */
-    void log(const std::string &msg);
+    void log(LogLevel lvl, const std::string &msg);
 
 private:
     int fd;
     SPSCQueue<std::string> queue;
     pthread_t worker;
     std::atomic<bool> stop; // Flag to send stop signal to worker
+    LogLevel logLvl;
 
     /**
      * @brief Entry point for worker thread
@@ -33,6 +44,7 @@ private:
     static void *worker_thread(void *arg);
     // Thread fn to process the log queue
     void run();
+    static const char *lvlToString(LogLevel lvl);
 };
 
 #endif
