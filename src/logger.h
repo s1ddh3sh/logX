@@ -4,10 +4,6 @@
 #include <string>
 #include <atomic>
 #include "spsc.h"
-/**
- * @class Logger
- * @brief Async Logger to write msgs to a file using worker thread
- */
 
 enum class LogLevel
 {
@@ -18,6 +14,10 @@ enum class LogLevel
     NONE
 };
 
+/**
+ * @class Logger
+ * @brief Async Logger to write msgs to a file using worker thread
+ */
 class Logger
 {
 public:

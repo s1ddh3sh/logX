@@ -4,6 +4,23 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <pthread.h>
+#include <chrono>
+#include <iomanip>
+#include <sstream>
+
+using namespace std::chrono;
+
+std::string timestamp()
+{
+    auto now = system_clock::now();
+    time_t t = system_clock::to_time_t(now);
+    auto ms = duration_cast<milliseconds>(now.time_since_epoch()) % 1000;
+
+    std::ostringstream oss;
+    oss << std::put_time(std::localtime(&t), "%F %T")
+        << "." << std::setfill('0') << std::setw(3) << ms.count();
+    return oss.str();
+}
 
 Logger::Logger(const std::string &filename, size_t queue_size) : queue(queue_size), stop(false), logLvl(LogLevel::INFO)
 {
@@ -31,7 +48,7 @@ void Logger::log(LogLevel lvl, const std::string &msg)
 {
     if (lvl < logLvl)
         return;
-    std::string m = "[" + std::string(lvlToString(lvl)) + "] " + msg;
+    std::string m = "[" + timestamp() + "]" + "[" + std::string(lvlToString(lvl)) + "] " + msg;
     while (!queue.enqueue(m))
     {
         sched_yield();

@@ -9,6 +9,8 @@ logX is an asynchronous logger library for C++ that writes log messages to a fil
 make
 ./bin/logger
 ```
+Check the generated log file (e.g. `app.log`) to see the output.
+
 **Note:**  
 Currently, the project is in testing mode.<br>
 At present, only test messages are logged from `logX.cpp`. The logger API and core functionality are under active development.
