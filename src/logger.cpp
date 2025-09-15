@@ -7,6 +7,7 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
+#include "hooks/log_hook.h"
 
 using namespace std::chrono;
 
@@ -24,11 +25,6 @@ std::string timestamp()
 
 Logger::Logger(const std::string &filename, size_t queue_size) : queue(queue_size), stop(false), logLvl(LogLevel::INFO)
 {
-    fd = open(filename.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0644);
-    if (fd == -1)
-    {
-        throw std::runtime_error("Failed to open file");
-    }
     // starts worker
     pthread_create(&worker, NULL, &Logger::worker_thread, this);
 }
@@ -36,14 +32,14 @@ Logger::~Logger()
 {
     stop.store(true, std::memory_order_release);
     pthread_join(worker, NULL);
-    if (fd != -1)
-    {
-        if (close(fd) == -1)
-        {
-            perror("close");
-        }
-    }
+    for (auto hook : hooks)
+        delete hook;
 }
+void Logger::addHook(LogHook *hook)
+{
+    hooks.push_back(hook);
+}
+
 void Logger::log(LogLevel lvl, const std::string &msg)
 {
     if (lvl < logLvl)
@@ -61,20 +57,6 @@ void *Logger::worker_thread(void *arg)
     self->run();
     return NULL;
 }
-static void writeAll(int fd, const char *buf, size_t len)
-{
-    size_t total = 0;
-    while (total < len)
-    {
-        ssize_t written;
-        if ((written = write(fd, buf + total, len - total)) == -1)
-        {
-            perror("write");
-            return;
-        }
-        total += written;
-    }
-}
 
 void Logger::run()
 {
@@ -90,14 +72,19 @@ void Logger::run()
 
             if (batch.size() >= 4096)
             {
-                if (write(this->fd, batch.data(), batch.size()) == -1)
-                    perror("write");
+                for (auto hook : hooks)
+                {
+                    hook->write(batch.data(), batch.size());
+                }
                 batch.clear();
             }
         }
         if (!batch.empty())
         {
-            write(fd, batch.data(), batch.size());
+            for (auto hook : hooks)
+            {
+                hook->write(batch.data(), batch.size());
+            }
             batch.clear();
         }
         sched_yield();
@@ -109,13 +96,15 @@ void Logger::run()
         batch.push_back('\n');
         if (batch.size() >= 4096)
         {
-            writeAll(this->fd, batch.data(), batch.size());
+            for (auto hook : hooks)
+                hook->write(batch.data(), batch.size());
             batch.clear();
         }
     }
     if (!batch.empty())
     {
-        writeAll(this->fd, batch.data(), batch.size());
+        for (auto hook : hooks)
+            hook->write(batch.data(), batch.size());
     }
 }
 

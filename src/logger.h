@@ -4,6 +4,7 @@
 #include <string>
 #include <atomic>
 #include "spsc.h"
+#include "hooks/log_hook.h"
 
 enum class LogLevel
 {
@@ -28,6 +29,7 @@ public:
      * @param msg The message to log.
      */
     void log(LogLevel lvl, const std::string &msg);
+    void addHook(LogHook *hook);
 
 private:
     int fd;
@@ -35,6 +37,7 @@ private:
     pthread_t worker;
     std::atomic<bool> stop; // Flag to send stop signal to worker
     LogLevel logLvl;
+    std::vector<LogHook *> hooks;
 
     /**
      * @brief Entry point for worker thread
