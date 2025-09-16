@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_compile_options(-Wall -pthread)
 
-add_executable(logger
-    logX.cpp
+add_executable(example
+    example.cpp
     src/logger.cpp
     src/hooks/log_hook.h
     src/hooks/file_hook.h

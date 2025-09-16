@@ -42,13 +42,11 @@ TEST(ConfigTests, LoadsConfigCorrectly)
 
 TEST(LoggerTests, LogsToFile)
 {
-    std::string logfile = "test.log";
+    std::string logfile = "app.log";
     if (fs::exists(logfile))
         fs::remove(logfile);
 
-    Logger logger(logfile, 128);
-    logger.addHook(new FileHook(logfile));
-    logger.setLogLvl(LogLevel::DEBUG);
+    Logger logger;
 
     logger.INFO("Hello test");
     logger.ERROR("Something failed");
@@ -64,12 +62,11 @@ TEST(LoggerTests, LogsToFile)
 
 TEST(LoggerTests, RespectsLogLevel)
 {
-    std::string logfile = "test_filter.log";
+    std::string logfile = "app.log";
     if (fs::exists(logfile))
         fs::remove(logfile);
 
-    Logger logger(logfile, 128);
-    logger.addHook(new FileHook(logfile));
+    Logger logger;
     logger.setLogLvl(LogLevel::ERROR);
 
     logger.DEBUG("debug msg");
@@ -88,15 +85,11 @@ TEST(LoggerTests, RespectsLogLevel)
 
 TEST(LoggerTests, MultipleHooks)
 {
-    std::string logfile = "test_multi.log";
+    std::string logfile = "app.log";
     if (fs::exists(logfile))
         fs::remove(logfile);
 
-    Logger logger(logfile, 128);
-    logger.addHook(new FileHook(logfile));
-    logger.addHook(new ConsoleHook());
-    logger.setLogLvl(LogLevel::INFO);
-
+    Logger logger;
     testing::internal::CaptureStdout();
     logger.INFO("Multi hook test");
     std::this_thread::sleep_for(std::chrono::milliseconds(100));

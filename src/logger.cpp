@@ -11,6 +11,9 @@
 #include "logger.h"
 #include "hooks/log_hook.h"
 
+#include <filesystem>
+namespace fs = std::filesystem;
+
 using namespace std::chrono;
 
 std::string timestamp()
@@ -25,8 +28,32 @@ std::string timestamp()
     return oss.str();
 }
 
-Logger::Logger(const std::string &filename, size_t queue_size) : queue(queue_size), stop(false), logLvl(LogLevel::INFO)
+Logger::Logger(const std::string &configPath = "logger.conf") : stop(false), logLvl(LogLevel::INFO)
 {
+    if (fs::exists(configPath))
+    {
+        cfg = ::loadConfig(configPath); // private member Config cfg;
+    }
+    else
+    {
+        // default config
+        cfg.level = "INFO";
+        cfg.queue_size = 1024;
+        cfg.file = "app.log";
+        cfg.console = true;
+    }
+    if (cfg.queue_size == 0)
+        cfg.queue_size = 1024;
+
+    queue = std::make_unique<SPSCQueue<std::string>>(cfg.queue_size);
+
+    if (!cfg.file.empty())
+        addHook(new FileHook(cfg.file));
+    if (cfg.console)
+        addHook(new ConsoleHook());
+
+    logLvl = stringToLvl(cfg.level);
+
     // starts worker
     pthread_create(&worker, NULL, &Logger::worker_thread, this);
 }
@@ -47,7 +74,7 @@ void Logger::log(LogLevel lvl, const std::string &msg)
     if (lvl < logLvl)
         return;
     std::string m = "[" + timestamp() + "]" + "[" + std::string(lvlToString(lvl)) + "] " + msg;
-    while (!queue.enqueue(m))
+    while (!queue->enqueue(m))
     {
         sched_yield();
     }
@@ -67,7 +94,7 @@ void Logger::run()
     batch.reserve(4096);
     while (!stop.load())
     {
-        while (queue.dequeue(msg))
+        while (queue->dequeue(msg))
         {
             batch.append(msg);
             batch.push_back('\n');
@@ -92,7 +119,7 @@ void Logger::run()
         sched_yield();
     }
     // final drain
-    while (queue.dequeue(msg))
+    while (queue->dequeue(msg))
     {
         batch.append(msg);
         batch.push_back('\n');

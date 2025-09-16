@@ -3,8 +3,13 @@
 
 #include <string>
 #include <atomic>
+#include <memory>
+
 #include "spsc.h"
 #include "hooks/log_hook.h"
+#include "config/config.h"
+#include "hooks/file_hook.h"
+#include "hooks/console_hook.h"
 
 enum class LogLevel
 {
@@ -22,7 +27,8 @@ enum class LogLevel
 class Logger
 {
 public:
-    Logger(const std::string &filename, size_t queue_size);
+    Logger() : Logger("app.log") {}
+    Logger(const std::string &filename);
     ~Logger();
     /**
      * @brief Queues a log message to be written to the file.
@@ -47,7 +53,7 @@ public:
 
 private:
     int fd;
-    SPSCQueue<std::string> queue;
+    std::unique_ptr<SPSCQueue<std::string>> queue;
     pthread_t worker;
     std::atomic<bool> stop; // Flag to send stop signal to worker
     LogLevel logLvl;
@@ -61,6 +67,10 @@ private:
     static void *worker_thread(void *arg);
     // Thread fn to process the log queue
     void run();
+    void loadConfig(const std::string &configPath);
+    void initHooks();
+    std::string configFile;
+    Config cfg;
 };
 
 #endif
