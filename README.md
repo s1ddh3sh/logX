@@ -34,7 +34,7 @@ console = true      # Print logs to console
 
 ### Usage:
 Use the per-level helpers:
-```console
+```cpp
 logger.INFO("App started");
 logger.ERROR("File not found");
 ```
