@@ -37,6 +37,7 @@ Logger logger("path_to_conf_file");
 logger.INFO("App started");
 logger.ERROR("File not found");
 ```
+Refer `example.cpp` for example usage.
 
 ## Running Tests:
 logX uses [Googletest (Gtest)](https://github.com/google/googletest) for unit testing.<br> (fetched automatically using cmake)
