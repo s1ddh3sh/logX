@@ -14,3 +14,5 @@ add_executable(logger
     src/hooks/console_hook.h
     src/config/config.cpp
 )
+enable_testing()
+add_subdirectory(tests)

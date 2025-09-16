@@ -33,7 +33,7 @@ console = true      # Print logs to console
 `level` = minimum level to record.
 
 ### Usage:
-Just use the `logger.LEVEL(msg)`, eg. logger.INFO(msg), logger.ERROR(msg), etc. <br>
+Just use the `logger.LEVEL(msg)`, eg. logger.INFO(msg), logger.ERROR(msg) <br>
 Refer `logX.cpp` for the usage.
 
 
