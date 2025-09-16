@@ -29,6 +29,17 @@ public:
      * @param msg The message to log.
      */
     void log(LogLevel lvl, const std::string &msg);
+
+#define DEFINE_LOG_FN(level) \
+    void level(const std::string &msg) { log(LogLevel::level, msg); }
+
+    DEFINE_LOG_FN(DEBUG)
+    DEFINE_LOG_FN(INFO)
+    DEFINE_LOG_FN(WARN)
+    DEFINE_LOG_FN(ERROR)
+
+#undef DEFINE_LOG_FN
+
     void addHook(LogHook *hook);
     void setLogLvl(LogLevel lvl);
     static const char *lvlToString(LogLevel lvl);
