@@ -5,7 +5,7 @@ logX is an asynchronous logger library for C++ that writes log messages to a fil
 - Configurable output targets (file, terminal)
 - Single-producer single-consumer lock-free queue
 
-### Building and running logX
+### Building and running logX:
 Run the `build.sh` script
 ```bash
 chmod +x build.sh
@@ -18,7 +18,7 @@ Run the `/build/logger` bin.
 ```
 Check the generated log file (e.g. `app.log`) to see the output.
 
-### Configuration
+### Configuration:
 The logger can be customized using config file `logger.conf`
 This file contains the log level and output hooks
 ```ini
@@ -31,6 +31,10 @@ file = app.log      # File path for file hook
 console = true      # Print logs to console
 ```
 `level` = minimum level to record.
+
+### Usage:
+Just use the `logger.LEVEL(msg)`, eg. logger.INFO(msg), logger.ERROR(msg), etc. <br>
+Refer `logX.cpp` for the usage.
 
 
 **Note:**  
