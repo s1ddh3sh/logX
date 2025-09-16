@@ -35,4 +35,4 @@ console = true      # Print logs to console
 
 **Note:**  
 Currently, the project is in testing mode.<br>
-At present, only test messages are logged from `logX.cpp`. The logger API and core functionality are under active development.
+At present, only test messages are logged from `logX.cpp`. The logger API is under active development.
