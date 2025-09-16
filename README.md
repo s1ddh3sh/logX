@@ -6,11 +6,11 @@ logX is an asynchronous logger library for C++ that writes log messages to a fil
 - Single-producer single-consumer lock-free queue
 
 ### Building and running logX:
-Run the `build.sh` script
+Run the `build_and_test.sh` script
 ```bash
-chmod +x build.sh
-./build.sh 
-# or just bash build.sh
+chmod +x build_and_test.sh
+./build_and_test.sh 
+# or just bash build_and_test.sh
 ```
 Run the `/build/logger` bin.
 ```bash
@@ -33,9 +33,26 @@ console = true      # Print logs to console
 `level` = minimum level to record.
 
 ### Usage:
-Just use the `logger.LEVEL(msg)`, eg. logger.INFO(msg), logger.ERROR(msg) <br>
-Refer `logX.cpp` for the usage.
+Use the per-level helpers:
+```console
+logger.INFO("App started");
+logger.ERROR("File not found");
+```
+Refer `logX.cpp` for a working example.
 
+### Running Tests:
+logX uses [Googletest (Gtest)](https://github.com/google/googletest) for unit testing.<br> (fetched automatically using cmake)
+1. Build with provided script:
+```bash
+./build_and_test.sh
+```
+This will automatically build and run the test suite.
+
+2. To run tests manually from the `build/` directory:
+```bash
+cd build
+ctest --output-on-failure
+```
 
 **Note:**  
 Currently, the project is in testing mode.<br>
