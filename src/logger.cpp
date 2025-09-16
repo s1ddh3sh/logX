@@ -1,4 +1,3 @@
-#include "logger.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdexcept>
@@ -7,6 +6,9 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
+#include <fstream>
+
+#include "logger.h"
 #include "hooks/log_hook.h"
 
 using namespace std::chrono;
@@ -108,6 +110,11 @@ void Logger::run()
     }
 }
 
+void Logger::setLogLvl(LogLevel lvl)
+{
+    this->logLvl = lvl;
+}
+
 const char *Logger::lvlToString(LogLevel lvl)
 {
     switch (lvl)
@@ -125,4 +132,17 @@ const char *Logger::lvlToString(LogLevel lvl)
     default:
         return "UNKNOWN";
     }
+}
+
+LogLevel Logger::stringToLvl(const std::string &s)
+{
+    if (s == "INFO")
+        return LogLevel::INFO;
+    if (s == "DEBUG")
+        return LogLevel::DEBUG;
+    if (s == "WARN")
+        return LogLevel::WARN;
+    if (s == "ERROR")
+        return LogLevel::ERROR;
+    return LogLevel::INFO;
 }

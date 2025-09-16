@@ -30,6 +30,9 @@ public:
      */
     void log(LogLevel lvl, const std::string &msg);
     void addHook(LogHook *hook);
+    void setLogLvl(LogLevel lvl);
+    static const char *lvlToString(LogLevel lvl);
+    static LogLevel stringToLvl(const std::string &lvl);
 
 private:
     int fd;
@@ -47,7 +50,6 @@ private:
     static void *worker_thread(void *arg);
     // Thread fn to process the log queue
     void run();
-    static const char *lvlToString(LogLevel lvl);
 };
 
 #endif
