@@ -5,7 +5,7 @@
 #include <atomic>
 #include <memory>
 
-#include "spsc.h"
+#include "../../src/spsc.h"
 #include "hooks/log_hook.h"
 #include "config/config.h"
 #include "hooks/file_hook.h"

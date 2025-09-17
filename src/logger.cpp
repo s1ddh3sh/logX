@@ -8,8 +8,8 @@
 #include <sstream>
 #include <fstream>
 
-#include "logger.h"
-#include "hooks/log_hook.h"
+#include "logX/logger.h"
+#include "logX/hooks/log_hook.h"
 
 #include <filesystem>
 namespace fs = std::filesystem;

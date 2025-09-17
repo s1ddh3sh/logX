@@ -5,20 +5,40 @@ logX is an asynchronous logger library for C++ that writes log messages to a fil
 - Configurable output targets (file, terminal)
 - Single-producer single-consumer lock-free queue
 
-## Building and running logX:
-Run the `build_and_test.sh` script
+## ⚡ Quick Start
+(Refer `example/example.cpp`)
+```cpp
+#include <logX/logger.h>
+
+int main() {
+    Logger logger("logger.conf");
+
+    logger.INFO("Application started");
+    logger.ERROR("Something went wrong!");
+}
+```
+1. Add a `logger.conf` file in project directory.
+2. Build and run (see below).
+3. Logs appear in console and/or app.log(default file if not specified).
+
+
+## 📦 Building & Running:
+Run the helper script
 ```bash
 ./build_and_test.sh
 ```
-Run the `/build/example` bin.
+This will:
+1. Configure & build the library and example app
+2. Run all tests using `ctest`.
+
+The example binary will be available in:
 ```bash
 ./build/example
 ```
 Check the generated log file (e.g. `app.log`) to see the output.
 
-## Configuration:
-The logger can be customized using config file `logger.conf`
-This file contains the log level and output hooks
+## ⚙️ Configuration:
+Logging behaviour is configured via `logger.conf`:
 ```ini
 [logger]
 level = INFO        # Possible values: DEBUG, INFO, WARN, ERROR, NONE
@@ -28,31 +48,26 @@ queue_size = 1024   # queue size
 file = app.log      # File path for file hook
 console = true      # Print logs to console
 ```
-`level` = minimum level to record.
+- `level` = minimum level to record
+- `queue_size` = size of internal message queue
+- `file` = optional output file
+- `console` = print logs to console if true
 
-## Usage:
-Use the per-level helpers:
-```cpp
-Logger logger("path_to_conf_file");
-logger.INFO("App started");
-logger.ERROR("File not found");
-```
-Refer `example.cpp` for example usage.
 
-## Running Tests:
-logX uses [Googletest (Gtest)](https://github.com/google/googletest) for unit testing.<br> (fetched automatically using cmake)
-1. Build with provided script:
+## ✅ Running Tests:
+logX uses [Googletest (Gtest)](https://github.com/google/googletest), automatically fetched using cmake
+1. Run with helper script:
 ```bash
 ./build_and_test.sh
 ```
 This will automatically build and run the test suite for you.
 
-2. To run tests manually from the `build/` directory:
+2. Or run manually:
 ```bash
 cd build
 ctest --output-on-failure
 ```
 
-**Note:**  
-Currently, the project is under development.<br>
-Try playing around with `example.cpp` for example usage. The public logger API is under active development.
+### 📌 Notes: 
+API is still under development.<br>
+Contributions & feedback are welcome.

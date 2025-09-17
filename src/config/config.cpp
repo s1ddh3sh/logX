@@ -1,4 +1,4 @@
-#include "config.h"
+#include "logX/config/config.h"
 #include <fstream>
 
 Config loadConfig(const std::string &path)

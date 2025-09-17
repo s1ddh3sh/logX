@@ -7,23 +7,25 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
-set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
-
 enable_testing()
+
 add_executable(logger_tests
     logger_tests.cpp
-    ../src/logger.cpp
-    ../src/hooks/file_hook.h
-    ../src/hooks/console_hook.h
-    ../src/config/config.cpp
 )
-
-target_include_directories(logger_tests PRIVATE ../src)
 
 target_link_libraries(logger_tests
-    GTest::gtest_main
-    pthread
+    PRIVATE
+        logX
+        GTest::gtest_main
+        pthread
 )
+
+target_include_directories(logger_tests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src
+)
+
 
 include(GoogleTest)
 gtest_discover_tests(logger_tests)

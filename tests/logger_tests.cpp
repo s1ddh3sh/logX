@@ -1,7 +1,7 @@
-#include "logger.h"
-#include "hooks/file_hook.h"
-#include "hooks/console_hook.h"
-#include "config/config.h"
+#include <logX/logger.h>
+#include "logX/hooks/file_hook.h"
+#include "logX/hooks/console_hook.h"
+#include "logX/config/config.h"
 #include <gtest/gtest.h>
 
 #include <fstream>
