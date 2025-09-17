@@ -64,8 +64,7 @@ This will automatically build and run the test suite for you.
 
 2. Or run manually:
 ```bash
-cd build
-ctest --output-on-failure
+cd build && ctest --output-on-failure
 ```
 
 ### 📌 Notes: 
