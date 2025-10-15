@@ -6,8 +6,7 @@ logX is an asynchronous logger library for C++ that writes log messages to a fil
 - Single-producer single-consumer lock-free queue
 <br>
 <br>
-
-<img src="assets/workflow.png" alt="logX Flow" width="530">
+![Workflow](assets/workflow.png)
 
 ## ⚡ Quick Start
 (Refer `example/example.cpp`)
